@@ -137,6 +137,20 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
   var API="https://script.google.com/macros/s/AKfycbxvyx2dNUykQD08biH0fTlAsZfYtVy61Lpaz347PkQwCBHu40dOyMfLHMHqmIfLu8GN-w/exec";
   window.ADMIN=/[?&]admin\b/.test(location.search);
   var ADMINPW=null;
+  var PENDING=null;
+  function askPw(){
+    var saved=null;try{saved=localStorage.getItem("gs.pw")}catch(e){}
+    if(saved){PENDING=saved;return Promise.resolve(saved)}
+    return new Promise(function(res){
+      var d=document.createElement("div");d.className="gate";
+      d.innerHTML='<div class="box"><h2>Сводка</h2><p>Введите пароль.</p><input id="pwin" type="password" autocomplete="current-password"><button class="btn" id="pwok" type="button">Открыть</button></div>';
+      document.body.appendChild(d);
+      var i=d.querySelector("#pwin");setTimeout(function(){i.focus()},50);
+      function ok(){var v=i.value;d.remove();PENDING=v;res(v)}
+      d.querySelector("#pwok").addEventListener("click",ok);
+      i.addEventListener("keydown",function(e){if(e.key==="Enter")ok()});
+    });
+  }
   function call(action,data){
     return fetch(API,{method:"POST",body:JSON.stringify({action:action,data:data}),redirect:"follow"})
       .then(function(r){return r.json()})
@@ -153,8 +167,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
     collection:function(){return{get:function(){
       function go(){return call("all",{pw:ADMINPW}).then(function(v){return{docs:[{id:"all",data:function(){return{voters:v}}}]}})}
       if(ADMINPW)return go();
-      var pw=window.prompt("Пароль для сводки");
-      return call("check",{pw:pw}).then(function(ok){if(!ok)throw{code:"denied"};ADMINPW=pw;return go()});
+      return askPw().then(function(pw){return call("check",{pw:pw}).then(function(ok){if(!ok){try{localStorage.removeItem("gs.pw")}catch(e){};throw{code:"denied"}};try{localStorage.setItem("gs.pw",pw)}catch(e){};return ok})}).then(function(){ADMINPW=ADMINPW||PENDING;return go()});
+      return call("check",{pw:""}).then(function(ok){if(!ok)throw{code:"denied"};ADMINPW=pw;return go()});
     }}}
   };
   var user={id:function(){return Promise.resolve(uid)},canEdit:function(){return Promise.resolve(window.ADMIN)},isOwner:function(){return Promise.resolve(window.ADMIN)},can:function(){return Promise.resolve(true)}};
