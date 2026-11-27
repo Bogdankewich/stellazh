@@ -1,0 +1,30 @@
+# Выкладывает gas/ в Apps Script и обновляет существующее развёртывание (ссылка /exec не меняется).
+# Нужны секреты репозитория: CLASPRC_JSON (содержимое ~/.clasprc.json после clasp login) и SCRIPT_ID.
+name: Apps Script deploy
+on:
+  push:
+    branches: [main]
+    paths: ['gas/**', '.github/workflows/apps-script.yml']
+  workflow_dispatch:
+concurrency: apps-script
+env:
+  DEPLOYMENT_ID: AKfycbxvyx2dNUykQD08biH0fTlAsZfYtVy61Lpaz347PkQwCBHu40dOyMfLHMHqmIfLu8GN-w
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: clasp
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          SCRIPT_ID: ${{ secrets.SCRIPT_ID }}
+        run: |
+          test -n "$CLASPRC_JSON" && test -n "$SCRIPT_ID" || { echo "Нет секретов CLASPRC_JSON / SCRIPT_ID"; exit 1; }
+          printf '%s' "$CLASPRC_JSON" > ~/.clasprc.json
+          printf '{"scriptId":"%s","rootDir":"gas"}' "$SCRIPT_ID" > .clasp.json
+          npm i -g @google/clasp@2.4.2
+          clasp push -f
+          clasp deploy -i "$DEPLOYMENT_ID" -d "github ${GITHUB_SHA::7}"
+          rm -f ~/.clasprc.json
