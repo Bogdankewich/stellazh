@@ -6,7 +6,7 @@ var SHEET = 'Ответы';
 var LABEL = {y:'Нравится', m:'Возможно', n:'Не подходит'};
 var COLS = 7; // Время | Голосующий | Ключ | ID | Вариант | Ответ | Категория
 // Категория по префиксу id: без префикса — стеллаж (старые id не менялись).
-var CATS = {curtain: 'Шторы', wallpaper: 'Обои'};
+var CATS = {curtain: 'Шторы', wallpaper: 'Обои', combo: 'Гостиная: сочетания'};
 function category_(id) {
   var m = String(id).match(/^([a-z]+):/);
   return m && CATS[m[1]] ? CATS[m[1]] : 'Стеллаж';
