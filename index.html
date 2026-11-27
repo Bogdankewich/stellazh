@@ -157,9 +157,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 @media (min-width:1000px){
   .wrap{max-width:1440px;padding:0 28px}
   .top .wrap{max-width:1440px}
-  #view .card:not(.done){display:grid;grid-template-columns:minmax(0,1fr) 420px;align-items:start;border-radius:22px}
-  #view .card .photo{aspect-ratio:auto;height:calc(100vh - var(--toph,150px) - 96px);min-height:480px}
-  #view .card .in{padding:22px 24px 150px;max-height:none}
+  #view .card:not(.done){display:grid;grid-template-columns:minmax(0,1fr) 420px;align-items:stretch;border-radius:22px;height:calc(100vh - var(--toph,150px) - 176px);min-height:460px}
+  #view .card .photo{aspect-ratio:auto;height:100%;min-height:0}
+  #view .card .in{padding:22px 24px 150px;height:100%;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
   .votebar{left:auto;right:max(28px,calc((100vw - 1440px)/2 + 28px));width:420px;bottom:18px;border:1px solid var(--line);border-radius:18px;padding:12px}
   .votes{max-width:none}.hint{max-width:none}
   .nav{max-width:none}
