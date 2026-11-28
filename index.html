@@ -415,16 +415,20 @@ function dscheme(p){
   if(p.kind==="W"&&W){var dw=W*k,dh=H*k,dy=top-25*k*10-dh,over=750+250+H>DH||W>1800;s+=R(ox+(ww-dw)/2,dy,dw,dh,over?bad:c,.3);note.push(W+" × "+H+" мм, низ на 250 мм выше комода"+(over?": не помещается":": верх на "+(1000+H)+" мм"))}
   if(p.kind==="P"){if(W){var pw=W*k,ph2=(H||450)*k;s+=R(ox+6,fl-ph2,pw,ph2,c,.3);note.push(W+(p.D?" × "+p.D:"")+(H?" × "+H:"")+" мм — рядом с комодом для масштаба")}else note.push("Размер уточнить на сайте")}
   s+=T(ox+ww/2,fl+13,"стена 2150 × 2500",8.5);
+  var plan='';
   if(isS){
-    s+=T(px+ww/2,10,"Вид сверху: проход до стола");
-    var kd=0.09,dep=(p.D||400)*kd,ty=oy+DT*kd;
-    s+='<line x1="'+px+'" y1="'+oy+'" x2="'+(px+ww)+'" y2="'+oy+'" stroke="var(--muted)" stroke-width="2.4"/>';
-    s+=R(px+(ww-sbW*k)/2,oy,sbW*k,dep,col,.3,!p.D);
-    s+=R(px+ww/2-450*kd,ty,900*kd,40,"var(--ink)",.25);
-    var pass=DT-(p.D||400);s+=T(px+ww/2,ty-4,"проход "+pass+" мм"+(p.D?"":" (глубина ?)"),8.5,pass<1000?bad:"var(--ink)");
-    s+=T(px+ww/2,ty+52,"край стола",8.5);
+    var kd=0.09,dep=(p.D||400)*kd,ty=12+DT*kd,q='';
+    q+=T(ox+ww/2,9,"Вид сверху: проход до края стола");
+    q+='<line x1="'+ox+'" y1="12" x2="'+(ox+ww)+'" y2="12" stroke="var(--muted)" stroke-width="2.4"/>';
+    q+=R(ox+(ww-sbW*k)/2,12,sbW*k,dep,col,.3,!p.D);
+    q+=R(ox+ww/2-450*kd,ty,900*kd,30,"var(--ink)",.25);
+    var pass=DT-(p.D||400);
+    q+='<line x1="'+(ox+ww/2)+'" y1="'+(12+dep)+'" x2="'+(ox+ww/2)+'" y2="'+ty+'" stroke="var(--muted)" stroke-dasharray="2 2"/>';
+    q+=T(ox+ww/2+6,(12+dep+ty)/2+3,"проход "+pass+" мм"+(p.D?"":" (глубина ?)"),9,pass<1000?bad:"var(--ink)","start");
+    q+=T(ox+ww/2,ty+44,"стол",8.5);
+    plan='<svg viewBox="0 0 '+(ox+ww+6)+' '+(ty+50)+'" role="img" aria-label="Вид сверху">'+q+'</svg>';
   }
-  return '<svg viewBox="0 0 '+(isS?vw:ox+ww+6)+' '+(fl+20)+'" role="img" aria-label="Схема размещения">'+s+'</svg>'+(note.length?'<div class="cap">'+esc(note.join(". "))+'</div>':'');
+  return '<svg viewBox="0 0 '+(ox+ww+6)+' '+(fl+20)+'" role="img" aria-label="Схема размещения">'+s+'</svg>'+plan+(note.length?'<div class="cap">'+esc(note.join(". "))+'</div>':'');
 }
 
 /* ---------- голоса и хранение ---------- */
